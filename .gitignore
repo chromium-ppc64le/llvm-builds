@@ -1,0 +1,8 @@
+build-root/
+target/
+
+*.stamp
+*.tar*
+
+llvm-*
+

@@ -1,0 +1,23 @@
+stages:
+  - build
+
+llvm:
+  image: fedora:latest
+  stage: build
+  timeout: 6h
+
+  tags:
+    - ppc64le
+    - docker
+
+  script:
+    - dnf install -y cmake gcc gcc-g++ git make ninja-build patch wget
+    - make
+
+  artifacts:
+    paths:
+      - target/*-ppc64le.tar*
+
+  only:
+    - web
+
