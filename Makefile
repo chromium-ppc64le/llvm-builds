@@ -11,9 +11,9 @@ project-id := 15464360
 
 artifact-dir := target
 
-llvm_rev := 8455294f2ac13d587b13d728038a9bffa7185f2b
+llvm_rev := 64a362e7216a43e3ad44e50a89265e72aeb14294
 llvm-dist-dir := llvm-$(llvm_rev)-ppc64le
-llvm-dist-file := $(llvm-dist-dir).tar.zstd
+llvm-dist-file := $(llvm-dist-dir).tar.zst
 llvm-dist-artifact := $(artifact-dir)/$(llvm-dist-file)
 
 llvm_url := https://github.com/llvm/llvm-project/archive/$(llvm_rev).tar.gz
@@ -22,7 +22,8 @@ llvm-archive := $(llvm_rev).tar.gz
 llvm-dir := $(CURDIR)/llvm-project-$(llvm_rev)
 llvm-build-dir := $(CURDIR)/llvm-build
 llvm-patched := llvm-patched.stamp
-llvm-patch := 0001-PowerPC-Do-not-emit-HW-loop-if-the-body-contains-cal.patch
+llvm-patch1 := 0001-PowerPC-Do-not-emit-HW-loop-if-the-body-contains-cal.patch
+llvm-patch2 := 0001-Fix-C-compilation-of-altivec.h.patch
 clang := $(llvm-build-dir)/bin/clang
 
 export CCACHE_BASEDIR := $(CURDIR)
@@ -39,7 +40,8 @@ $(llvm-dir): | $(llvm-archive)
 	tar xzf $|
 
 $(llvm-patched): | $(llvm-dir)
-	patch -d $| -p1 < $(llvm-patch)
+	patch -d $| -p1 < $(llvm-patch1)
+	patch -d $| -p1 < $(llvm-patch2)
 	touch $@
 
 $(llvm-build-dir)/CMakeCache.txt: $(llvm-patched) | $(llvm-build-dir) $(llvm-dir)
@@ -94,5 +96,5 @@ gitlab-upload-release:
 
 .PHONY: github-upload-release
 github-upload-release:
-	./create-gitlab-release.pl $(llvm_rev) $(llvm-dist-artifact)
+	./create-github-release.pl $(llvm_rev) $(llvm-dist-artifact)
 

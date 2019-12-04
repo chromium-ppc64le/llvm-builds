@@ -1,0 +1,39 @@
+From 47af751ae82e8f999d551734dcd86fb32f107876 Mon Sep 17 00:00:00 2001
+From: Colin Samples <colin.samples+git@gmail.com>
+Date: Mon, 2 Dec 2019 17:47:50 -0500
+Subject: [PATCH] Fix C++ compilation of altivec.h
+
+---
+ clang/lib/Headers/altivec.h | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/clang/lib/Headers/altivec.h b/clang/lib/Headers/altivec.h
+index 7e231a2a428..5805def7961 100644
+--- a/clang/lib/Headers/altivec.h
++++ b/clang/lib/Headers/altivec.h
+@@ -2909,7 +2909,21 @@ static __inline__ vector double __ATTRS_o_ai vec_cpsgn(vector double __a,
+ 
+ /* vec_cts */
+ 
+-#ifdef __VSX__
++#if defined(__VSX__) && defined(__cplusplus)
++#define vec_cts(__a, __b)                                                      \
++  _Generic((__a), vector float                                                 \
++           : __builtin_altivec_vctsxs((vector float)(__a), (__b)),             \
++	     __v4sf                                                 \
++           : __builtin_altivec_vctsxs((vector float)(__a), (__b)),             \
++             vector double                                                     \
++           : __extension__({                                                   \
++             vector double __ret =                                             \
++                 (vector double)(__a) *                                        \
++                 (vector double)(vector unsigned long long)((0x3ffULL + (__b)) \
++                                                            << 52);            \
++             __builtin_convertvector(__ret, vector signed long long);          \
++           }))
++#elif defined(__VSX__)
+ #define vec_cts(__a, __b)                                                      \
+   _Generic((__a), vector float                                                 \
+            : __builtin_altivec_vctsxs((vector float)(__a), (__b)),             \
+-- 
+2.23.0
+
