@@ -8,10 +8,11 @@ FROM fedora:latest
 RUN dnf -y update && \
     dnf -y install \
         ccache \
+        clang \
         cmake \
-        gcc \
-        gcc-g++ \
         git \
+        lld \
+        llvm \
         make \
         ninja-build \
         patch \
@@ -24,7 +25,5 @@ RUN dnf -y update && \
 RUN mkdir -p /workdir
 WORKDIR /workdir
 
-COPY . /workdir
-
-CMD ["/usr/bin/make"]
+CMD ["/usr/bin/bash"]
 

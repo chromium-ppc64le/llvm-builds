@@ -11,7 +11,7 @@ project-id := 15464360
 
 artifact-dir := target
 
-llvm_rev := eaabaf7e04fe98990a8177a3e053346395efde1c
+llvm_rev := 4e0d9925d6a3561449bdd8def27fd3f3f1b3fb9f
 llvm-dist-dir := llvm-$(llvm_rev)-ppc64le
 llvm-dist-file := $(llvm-dist-dir).tar.zst
 llvm-dist-artifact := $(artifact-dir)/$(llvm-dist-file)
@@ -47,18 +47,19 @@ $(llvm-build-dir)/CMakeCache.txt: $(llvm-patched) | $(llvm-build-dir) $(llvm-dir
 	    -G "Ninja" \
 	    -DCMAKE_BUILD_TYPE=Release \
 	    -DLLVM_ENABLE_LTO=full \
+	    -DLLVM_ENABLE_LLD=ON \
 	    -DLLVM_ENABLE_WARNINGS=OFF \
 	    -DCMAKE_INSTALL_PREFIX=$(CURDIR)/$(artifact-dir)/$(llvm-dist-dir) \
 	    -DLLVM_ENABLE_PROJECTS="clang;lld" \
 	    -DLLVM_TARGETS_TO_BUILD="PowerPC" \
-	    -DCMAKE_C_COMPILER=/usr/bin/gcc \
-	    -DCMAKE_CXX_COMPILER=/usr/bin/g++ \
-	    -DCMAKE_AR=/usr/bin/gcc-ar \
-	    -DCMAKE_NM=/usr/bin/gcc-nm \
-	    -DCMAKE_RANLIB=/usr/bin/gcc-ranlib \
+	    -DCMAKE_C_COMPILER=/usr/bin/clang \
+	    -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+	    -DCMAKE_AR=/usr/bin/llvm-ar \
+	    -DCMAKE_NM=/usr/bin/llvm-nm \
+	    -DCMAKE_RANLIB=/usr/bin/llvm-ranlib \
 	    -DCMAKE_C_COMPILER_LAUNCHER=/usr/bin/ccache \
 	    -DCMAKE_CXX_COMPILER_LAUNCHER=/usr/bin/ccache \
-	    -DLLVM_PARALLEL_LINK_JOBS=16
+	    -DLLVM_PARALLEL_LINK_JOBS=4
 
 $(clang): $(llvm-build-dir)/CMakeCache.txt
 	ninja -C $(llvm-build-dir) -j $(NUM_THREADS)
@@ -77,12 +78,13 @@ all: $(llvm-dist-artifact)
 .PHONY: dev
 dev:
 	mkdir -p build-root
+	git ls-files -z | xargs -0 -I{} cp {} build-root
 	podman build -t llvm-build-image .
 	podman run -it \
 	    --name=llvm-builder \
 	    --rm \
 	    --volume=$(CURDIR)/build-root:/workdir:z \
-	    --volume=$(CURDIR)/$(artifact_dir):/workdir/$(artifact-dir):z \
+	    --volume=$(CURDIR)/$(artifact-dir):/workdir/$(artifact-dir):z \
 	    llvm-build-image /usr/bin/bash
 
 .PHONY: tag-release

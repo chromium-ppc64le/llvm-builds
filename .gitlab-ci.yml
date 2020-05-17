@@ -19,7 +19,7 @@ llvm:
     - tags
 
   script:
-    - dnf install -y ccache cmake gcc gcc-g++ git make ninja-build patch wget zstd
+    - dnf install -y ccache cmake clang llvm lld git make ninja-build patch wget zstd
     - make
 
   artifacts:
@@ -44,7 +44,6 @@ github-release:
     - local
 
   only:
-    - web
     - tags
 
   script:
