@@ -11,7 +11,7 @@ project-id := 15464360
 
 artifact-dir := target
 
-llvm_rev := 4e0d9925d6a3561449bdd8def27fd3f3f1b3fb9f
+llvm_rev := 99ac9ce7016d701b43b8f0c308dc3463da57d983
 llvm-dist-dir := llvm-$(llvm_rev)-ppc64le
 llvm-dist-file := $(llvm-dist-dir).tar.zst
 llvm-dist-artifact := $(artifact-dir)/$(llvm-dist-file)
