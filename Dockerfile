@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-FROM fedora:latest
+FROM docker.io/library/fedora:29
 
 RUN dnf -y update && \
     dnf -y install \

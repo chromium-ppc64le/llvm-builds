@@ -3,7 +3,7 @@ stages:
   - deploy
 
 default:
-  image: fedora:latest
+  image: fedora:29
 
 llvm:
   stage: build
