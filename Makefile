@@ -5,7 +5,7 @@
 
 .DEFAULT_GOAL := all
 
-export NUM_THREADS ?= 16
+export NUM_THREADS ?= 32
 
 project-id := 15464360
 
@@ -43,7 +43,7 @@ $(llvm-patched): | $(llvm-dir)
 	touch $@
 
 $(llvm-build-dir)/CMakeCache.txt: $(llvm-patched) | $(llvm-build-dir) $(llvm-dir)
-	cmake -S $(llvm-dir)/llvm -B $(llvm-build-dir) \
+	cd $(llvm-build-dir) && cmake $(llvm-dir)/llvm \
 	    -G "Ninja" \
 	    -DCMAKE_BUILD_TYPE=Release \
 	    -DLLVM_ENABLE_LTO=full \

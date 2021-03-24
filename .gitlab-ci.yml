@@ -3,7 +3,7 @@ stages:
   - deploy
 
 default:
-  image: fedora:latest
+  image: quay.io/centos/centos:centos8
 
 llvm:
   stage: build
@@ -18,8 +18,13 @@ llvm:
     - web
     - tags
 
+  before_script:
+    - dnf -y install epel-release
+    - dnf -y install dnf-plugins-core
+    - dnf config-manager --set-enabled powertools
+    - dnf install -y ccache cmake clang llvm lld git make python2 ninja-build patch wget zstd
+
   script:
-    - dnf install -y ccache cmake clang llvm lld git make ninja-build patch wget zstd
     - make
 
   artifacts:
@@ -46,7 +51,10 @@ github-release:
   only:
     - tags
 
+  before_script:
+    - dnf install -y make perl-Data-Dumper
+    - dnf install -y perl-Net-GitHub-1.01-4.el8.noarch.rpm
+
   script:
-    - dnf install -y make perl-Data-Dumper perl-Net-GitHub
     - make github-upload-release
 
