@@ -90,16 +90,3 @@ dev:
 .PHONY: tag-release
 tag-release:
 	git tag -s v$(llvm_rev) -m "LLVM $(llvm_rev)"
-
-include release-json-template.mk
-.PHONY: gitlab-upload-release
-gitlab-upload-release:
-	curl --header 'Content-Type: application/json' \
-	     --header "PRIVATE-TOKEN: $(GITLAB_API_TOKEN)" \
-	     --data "$$release_json_template" \
-	     --request POST https://gitlab.com/api/v4/projects/$(project-id)/releases
-
-.PHONY: github-upload-release
-github-upload-release:
-	./create-github-release.pl $(llvm_rev) $(llvm-dist-artifact)
-
