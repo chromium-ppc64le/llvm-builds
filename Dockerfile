@@ -19,7 +19,6 @@ RUN dnf -y update && \
         make \
         ninja-build \
         patch \
-        perl-Data-Dumper \
         wget \
         python2 \
         zstd \
