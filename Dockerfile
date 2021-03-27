@@ -24,8 +24,6 @@ RUN dnf -y update && \
         python2 \
         zstd \
     && dnf clean all
-COPY perl-Net-GitHub-1.01-4.el8.noarch.rpm /tmp
-RUN dnf install -y /tmp/perl-Net-GitHub-1.01-4.el8.noarch.rpm
 
 RUN mkdir -p /workdir
 WORKDIR /workdir
