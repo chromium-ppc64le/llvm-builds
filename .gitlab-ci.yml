@@ -1,18 +1,22 @@
 stages:
   - build
-  - deploy
+  - upload
+  - release
 
 default:
   image: quay.io/centos/centos:centos8
 
-llvm:
+variables:
+  VERSION: "0.0.0" # set semver to please the API
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/llvm-builds/${VERSION}"
+
+build:
   stage: build
   timeout: 6h
 
   tags:
     - ppc64le
     - docker
-    - local
 
   only:
     - web
@@ -36,25 +40,30 @@ llvm:
     paths:
       - .ccache
 
-github-release:
-  stage: deploy
-  timeout: 6h
-
-  dependencies:
-    - llvm
-
-  tags:
-    - ppc64le
-    - docker
-    - local
+upload:
+  stage: upload
 
   only:
     - tags
 
-  before_script:
-    - dnf install -y make perl-Data-Dumper
-    - dnf install -y perl-Net-GitHub-1.01-4.el8.noarch.rpm
+  tags:
+    - ppc64le
+    - docker
 
   script:
-    - make github-upload-release
+    - chmod +x ./upload.sh
+    - ./upload.sh
 
+release:
+  stage: release
+
+  tags:
+    - ppc64le
+    - docker
+
+  only:
+    - tags
+
+  script:
+    - chmod +x ./release.sh
+    - ./release.sh
