@@ -11,4 +11,4 @@ for f in target/*; do
   links+=" --assets-link {\"name\":\"${filename}\",\"url\":\"${PACKAGE_REGISTRY_URL}/${filename}\"}"
 done
 
-./release-cli create --name "Release ${CI_COMMIT_TAG}" --tag-name ${CI_COMMIT_TAG} ${links}
+./release-cli create --name "LLVM ${CI_COMMIT_TAG}" --description "LLVM ${CI_COMMIT_TAG}" --tag-name ${CI_COMMIT_TAG} ${links}
